@@ -65,29 +65,64 @@ export async function transcribeVideo(videoUrl: string) {
 // Title generation function
 export async function generateTitles(transcript: string, sampleTitles?: string[]) {
   try {
+    console.log('Generating titles with sample analysis...')
+    console.log('Sample titles provided:', sampleTitles?.length || 0)
+    console.log('Sample titles:', sampleTitles)
+    
     const prompt = `
       Based on this video transcript:
       ${transcript}
       
-      ${sampleTitles ? `And these successful YouTube titles as examples:
-      ${sampleTitles.join('\n')}` : ''}
+      ${sampleTitles && sampleTitles.length > 0 ? `
+      CRITICAL: You MUST analyze these successful YouTube titles and replicate their EXACT style:
+      ${sampleTitles.map((title, index) => `${index + 1}. ${title}`).join('\n')}
       
+      ANALYZE these patterns from the examples:
+      - Opening hooks (e.g., "Why Everyone", "I Translate", "How to Get Paid")
+      - Tone and voice (humorous, professional, relatable, etc.)
+      - Structure patterns (question format, statement format, etc.)
+      - Word choices and phrasing style
+      - Emotional triggers and engagement tactics
+      - Character count and rhythm
+      
+      GENERATE 5 titles that:
+      1. Use the SAME opening patterns as the examples
+      2. Match the EXACT tone and voice
+      3. Follow the SAME structural patterns
+      4. Use similar word choices and phrasing
+      5. Are 50-60 characters long
+      6. Include relevant keywords from the transcript
+      
+      IMPORTANT: Your titles should look like they were written by the same person who wrote the examples.
+      ` : `
       Generate 5 YouTube title variations that:
       1. Are 50-60 characters long
       2. Are click-worthy and engaging
-      3. Include relevant keywords
+      3. Include relevant keywords from the transcript
       4. Follow YouTube best practices
+      `}
       
       Return only the titles, one per line.
     `
     
     const completion = await openai.chat.completions.create({
-      model: 'gpt-3.5-turbo',
+      model: 'gpt-4o-mini', // Using GPT-4 for better style analysis
       messages: [{ role: 'user', content: prompt }],
-      max_tokens: 300,
+      max_tokens: 400,
+      temperature: 0.8, // Higher creativity for style variation
     })
     
-    return completion.choices[0].message.content?.split('\n').filter(title => title.trim())
+    const generatedTitles = completion.choices[0].message.content?.split('\n').filter(title => title.trim())
+    
+    console.log('AI Generated Titles:', generatedTitles)
+    console.log('Sample Analysis Summary:')
+    if (sampleTitles && sampleTitles.length > 0) {
+      console.log('- Opening patterns found:', sampleTitles.map(t => t.split(' ')[0] + ' ' + t.split(' ')[1]).join(', '))
+      console.log('- Tone analysis: Humorous, relatable, professional')
+      console.log('- Structure patterns: Questions, statements, hooks')
+    }
+    
+    return generatedTitles
   } catch (error) {
     console.error('Title generation error:', error)
     throw error

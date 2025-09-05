@@ -1,27 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { generateTitles } from '@/lib/openai'
+import { generateDescription } from '@/lib/openai'
 import { supabaseAdmin } from '@/lib/supabase'
 
 export async function POST(request: NextRequest) {
   try {
-    const { transcript, sampleTitles, transcriptId } = await request.json()
-    
-    console.log('API: Received request for title generation')
-    console.log('API: Sample titles received:', sampleTitles?.length || 0)
-    console.log('API: Sample titles:', sampleTitles)
+    const { transcript, title, transcriptId } = await request.json()
     
     if (!transcript) {
       return NextResponse.json({ error: 'Transcript required' }, { status: 400 })
     }
 
-    // Generate titles using OpenAI with sample analysis
-    const titles = await generateTitles(transcript, sampleTitles)
-    
-    if (!titles || titles.length === 0) {
-      return NextResponse.json({ error: 'Failed to generate titles' }, { status: 500 })
+    if (!title) {
+      return NextResponse.json({ error: 'Title required' }, { status: 400 })
     }
 
-    // Store generated titles in database if transcriptId is provided
+    // Generate description using OpenAI
+    const description = await generateDescription(transcript, title)
+    
+    if (!description) {
+      return NextResponse.json({ error: 'Failed to generate description' }, { status: 500 })
+    }
+
+    // Store generated description in database if transcriptId is provided
     if (transcriptId) {
       try {
         const { data, error } = await supabaseAdmin
@@ -29,7 +29,8 @@ export async function POST(request: NextRequest) {
           .upsert({
             transcript_id: transcriptId,
             transcript: transcript,
-            generated_titles: titles,
+            generated_description: description,
+            selected_title: title,
             updated_at: new Date().toISOString()
           }, {
             onConflict: 'transcript_id'
@@ -38,7 +39,7 @@ export async function POST(request: NextRequest) {
           .single()
 
         if (error) {
-          console.error('Database error storing titles:', error)
+          console.error('Database error storing description:', error)
           // Don't fail the request if database storage fails
         }
       } catch (dbError) {
@@ -49,21 +50,16 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      titles: titles,
-      count: titles.length,
-      sampleAnalysis: sampleTitles ? {
-        samplesProvided: sampleTitles.length,
-        analysisUsed: true
-      } : {
-        samplesProvided: 0,
-        analysisUsed: false
-      }
+      description: description,
+      title: title,
+      wordCount: description.split(/\s+/).length,
+      characterCount: description.length
     })
 
   } catch (error) {
-    console.error('Title generation error:', error)
+    console.error('Description generation error:', error)
     return NextResponse.json({ 
-      error: 'Title generation failed',
+      error: 'Description generation failed',
       details: error instanceof Error ? error.message : 'Unknown error'
     }, { status: 500 })
   }
