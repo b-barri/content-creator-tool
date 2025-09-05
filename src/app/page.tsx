@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import VideoUpload from '@/components/VideoUpload'
 import TranscriptionStatus from '@/components/TranscriptionStatus'
 import TranscriptDisplay from '@/components/TranscriptDisplay'
@@ -19,11 +19,20 @@ export default function Home() {
   const [thumbnails, setThumbnails] = useState<any[]>([])
   const [selectedThumbnail, setSelectedThumbnail] = useState<any>(null)
   const [sampleTitles, setSampleTitles] = useState<string[]>([])
+  const [sampleDescriptions, setSampleDescriptions] = useState<string[]>([])
   const [error, setError] = useState('')
   const [showTranscription, setShowTranscription] = useState(false)
   const [isGeneratingTitles, setIsGeneratingTitles] = useState(false)
   const [isGeneratingDescription, setIsGeneratingDescription] = useState(false)
   const [isGeneratingThumbnails, setIsGeneratingThumbnails] = useState(false)
+
+  // Auto-generate titles when transcript becomes available and samples exist
+  useEffect(() => {
+    if (transcript && sampleTitles.length > 0 && !titles.length) {
+      console.log('Frontend: Auto-generating titles with samples after transcript available')
+      generateTitles()
+    }
+  }, [transcript, sampleTitles.length])
 
   const handleUploadComplete = async (uploadData: any) => {
     setUploadedFile(uploadData)
@@ -32,18 +41,18 @@ export default function Home() {
   }
 
   const handleTranscriptionComplete = async (transcriptText: string, id: string) => {
+    console.log('Frontend: Transcription completed, setting transcript:', transcriptText?.substring(0, 100) + '...')
+    console.log('Frontend: Transcript ID:', id)
     setTranscript(transcriptText)
     setTranscriptId(id)
     setShowTranscription(false)
-
-    // Auto-generate titles if user already has samples loaded
-    if (sampleTitles.length > 0) {
-      await generateTitles()
-    }
   }
 
   const generateTitles = async () => {
+    console.log('Frontend: generateTitles called, transcript exists:', !!transcript)
+    console.log('Frontend: transcript length:', transcript?.length || 0)
     if (!transcript) {
+      console.log('Frontend: No transcript available, setting error')
       setError('No transcript available for title generation')
       return
     }
@@ -90,20 +99,31 @@ export default function Home() {
   const generateDescription = async (title: string) => {
     setIsGeneratingDescription(true)
     try {
+      console.log('Frontend: Generating description with samples:', sampleDescriptions)
+      console.log('Frontend: Sample descriptions count:', sampleDescriptions.length)
+
       const response = await fetch('/api/generate-descriptions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           transcript,
           title,
-          transcriptId
+          transcriptId,
+          sampleDescriptions: sampleDescriptions.length > 0 ? sampleDescriptions : undefined
         })
       })
 
       const data = await response.json()
 
+      console.log('Frontend: API response received:', data)
+      console.log('Frontend: data.success:', data.success)
+      console.log('Frontend: data.description exists:', !!data.description)
+      
       if (data.success) {
+        console.log('Frontend: Setting description:', data.description?.substring(0, 100) + '...')
+        console.log('Frontend: Description length:', data.description?.length || 0)
         setDescription(data.description)
+        console.log('Frontend: Description state should be updated now')
       } else {
         console.error('Description generation failed:', data.error)
         setError('Failed to generate description: ' + data.error)
@@ -164,6 +184,7 @@ export default function Home() {
   }
 
   const handleDescriptionChange = (newDescription: string) => {
+    console.log('Page: handleDescriptionChange called with:', newDescription?.substring(0, 50) + '...')
     setDescription(newDescription)
   }
 
@@ -213,8 +234,10 @@ export default function Home() {
         <div className="mb-8">
           <SampleTitleUpload 
             onSampleTitlesUpdate={handleSampleTitlesUpdate}
+            onSampleDescriptionsUpdate={setSampleDescriptions}
             onGenerateTitles={generateTitles}
             currentSampleTitles={sampleTitles}
+            currentSampleDescriptions={sampleDescriptions}
             isTranscriptionComplete={!!transcript}
             isTranscriptionInProgress={showTranscription}
           />
@@ -236,12 +259,18 @@ export default function Home() {
         {/* Description Generation Section */}
         {transcript && (
           <div className="mb-8">
+            {console.log('Page: Rendering DescriptionEditor with description:', !!description, 'Length:', description?.length || 0)}
+            {console.log('Page: description value:', description)}
+            {console.log('Page: description === undefined:', description === undefined)}
+            {console.log('Page: description === null:', description === null)}
+            {console.log('Page: description === "":', description === '')}
             <DescriptionEditor
               description={description}
               onDescriptionChange={handleDescriptionChange}
               onGenerateDescription={generateDescription}
               selectedTitle={selectedTitle}
               isLoading={isGeneratingDescription}
+              sampleDescriptionsCount={sampleDescriptions.length}
             />
           </div>
         )}

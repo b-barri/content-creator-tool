@@ -8,6 +8,7 @@ interface DescriptionEditorProps {
   onGenerateDescription: (title: string) => Promise<void>
   selectedTitle?: string
   isLoading?: boolean
+  sampleDescriptionsCount?: number
 }
 
 export default function DescriptionEditor({ 
@@ -15,13 +16,18 @@ export default function DescriptionEditor({
   onDescriptionChange, 
   onGenerateDescription,
   selectedTitle,
-  isLoading = false 
+  isLoading = false,
+  sampleDescriptionsCount = 0
 }: DescriptionEditorProps) {
   const [isEditing, setIsEditing] = useState(false)
   const [localDescription, setLocalDescription] = useState(description)
   const [copied, setCopied] = useState(false)
 
   useEffect(() => {
+    console.log('DescriptionEditor: useEffect triggered')
+    console.log('DescriptionEditor: Description updated:', description?.substring(0, 100) + '...')
+    console.log('DescriptionEditor: Description is null/undefined:', description === null || description === undefined)
+    console.log('DescriptionEditor: Description is empty string:', description === '')
     setLocalDescription(description)
   }, [description])
 
@@ -68,10 +74,24 @@ export default function DescriptionEditor({
     })
   }
 
+  console.log('DescriptionEditor: Current description state:', !!description, 'Length:', description?.length || 0)
+  console.log('DescriptionEditor: isLoading:', isLoading)
+  console.log('DescriptionEditor: localDescription:', localDescription?.substring(0, 50) + '...')
+
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-gray-900">YouTube Description</h3>
+        <div className="flex items-center space-x-4">
+          <h3 className="text-lg font-semibold text-gray-900">YouTube Description</h3>
+          {sampleDescriptionsCount > 0 && (
+            <div className="flex items-center space-x-2 text-sm text-blue-600">
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
+              </svg>
+              <span>Analyzed {sampleDescriptionsCount} sample description{sampleDescriptionsCount !== 1 ? 's' : ''}</span>
+            </div>
+          )}
+        </div>
         <div className="flex space-x-2">
           {selectedTitle && !description && (
             <button

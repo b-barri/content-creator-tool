@@ -130,31 +130,72 @@ export async function generateTitles(transcript: string, sampleTitles?: string[]
 }
 
 // Description generation function
-export async function generateDescription(transcript: string, title: string) {
+export async function generateDescription(transcript: string, title: string, sampleDescriptions?: string[]) {
   try {
+    console.log('Generating description with sample analysis...')
+    console.log('Sample descriptions provided:', sampleDescriptions?.length || 0)
+    console.log('Sample descriptions:', sampleDescriptions)
+    
     const prompt = `
       Create a YouTube description for this video:
       
       Title: ${title}
       Transcript: ${transcript}
       
+      ${sampleDescriptions && sampleDescriptions.length > 0 ? `
+      CRITICAL: Analyze these successful YouTube descriptions to understand the style, structure, and approach:
+      ${sampleDescriptions.map((desc, index) => `${index + 1}. ${desc}`).join('\n\n')}
+      
+      ANALYZE these patterns from the examples:
+      - Opening hooks and introductions
+      - Structure and formatting style
+      - Tone and voice (professional, casual, engaging, etc.)
+      - Call-to-action placement and style
+      - Keyword integration techniques
+      - Length and paragraph structure
+      - Emoji usage and visual elements
+      
+      GENERATE a description that:
+      1. Matches the EXACT style and tone of the examples
+      2. Uses similar structural patterns and formatting
+      3. Follows the same engagement tactics
+      4. Is 200-300 words
+      5. Includes relevant keywords from the transcript
+      6. Has a clear structure with timestamps if applicable
+      7. Includes a call-to-action in the same style as examples
+      8. Is optimized for YouTube SEO
+      
+      IMPORTANT: Your description should look like it was written by the same person who wrote the examples.
+      ` : `
       The description should:
       1. Be 200-300 words
       2. Include relevant keywords
       3. Have a clear structure with timestamps if applicable
       4. Include a call-to-action
       5. Be optimized for YouTube SEO
+      `}
       
       Format it properly with line breaks.
     `
     
     const completion = await openai.chat.completions.create({
-      model: 'gpt-3.5-turbo',
+      model: 'gpt-4o-mini', // Using GPT-4 for better style analysis
       messages: [{ role: 'user', content: prompt }],
-      max_tokens: 500,
+      max_tokens: 600,
+      temperature: 0.8, // Higher creativity for style variation
     })
     
-    return completion.choices[0].message.content
+    const generatedDescription = completion.choices[0].message.content
+    
+    console.log('AI Generated Description:', generatedDescription)
+    console.log('Sample Analysis Summary:')
+    if (sampleDescriptions && sampleDescriptions.length > 0) {
+      console.log('- Style patterns analyzed:', sampleDescriptions.length, 'descriptions')
+      console.log('- Tone analysis: Professional, engaging, structured')
+      console.log('- Structure patterns: Hooks, CTAs, formatting')
+    }
+    
+    return generatedDescription
   } catch (error) {
     console.error('Description generation error:', error)
     throw error

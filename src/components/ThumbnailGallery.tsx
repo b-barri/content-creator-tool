@@ -114,39 +114,79 @@ export default function ThumbnailGallery({
             }`}
             onClick={() => onThumbnailSelect(thumbnail)}
           >
-            <div className="aspect-video bg-gray-100 relative">
+            <div style={{ 
+              position: 'relative', 
+              width: '100%', 
+              height: '200px', 
+              backgroundColor: '#f3f4f6',
+              borderRadius: '8px',
+              overflow: 'hidden'
+            }}>
               <img
                 src={thumbnail.url}
                 alt={`Thumbnail ${index + 1}`}
-                className="w-full h-full object-cover"
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                  display: 'block',
+                  backgroundColor: '#f0f0f0'
+                }}
+                onLoad={(e) => {
+                  console.log(`✅ Thumbnail ${index + 1} loaded successfully:`, thumbnail.url)
+                }}
                 onError={(e) => {
+                  console.error(`❌ Failed to load thumbnail ${index + 1}:`, thumbnail.url)
                   const target = e.target as HTMLImageElement
-                  target.src = `https://via.placeholder.com/400x225/cccccc/666666?text=Thumbnail+${index + 1}`
+                  target.src = `https://httpbin.org/image/png` // Working fallback
                 }}
               />
               
-              {/* Overlay with actions */}
-              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-200 flex items-center justify-center">
-                <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex space-x-2">
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      handleCopyUrl(thumbnail.url, index)
-                    }}
-                    className="px-3 py-1 text-xs bg-white text-gray-800 rounded hover:bg-gray-100 transition-colors"
-                  >
-                    {copiedIndex === index ? 'Copied!' : 'Copy URL'}
-                  </button>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      handleDownload(thumbnail.url, index)
-                    }}
-                    className="px-3 py-1 text-xs bg-white text-gray-800 rounded hover:bg-gray-100 transition-colors"
-                  >
-                    Download
-                  </button>
-                </div>
+              {/* Overlay with actions - positioned outside image */}
+              <div style={{ 
+                position: 'absolute', 
+                top: '5px', 
+                right: '5px', 
+                display: 'flex', 
+                gap: '5px',
+                opacity: 0,
+                transition: 'opacity 0.2s'
+              }}
+              className="group-hover:opacity-100">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    handleCopyUrl(thumbnail.url, index)
+                  }}
+                  style={{
+                    padding: '4px 8px',
+                    fontSize: '12px',
+                    backgroundColor: 'white',
+                    color: '#374151',
+                    border: 'none',
+                    borderRadius: '4px',
+                    cursor: 'pointer'
+                  }}
+                >
+                  {copiedIndex === index ? 'Copied!' : 'Copy URL'}
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    handleDownload(thumbnail.url, index)
+                  }}
+                  style={{
+                    padding: '4px 8px',
+                    fontSize: '12px',
+                    backgroundColor: 'white',
+                    color: '#374151',
+                    border: 'none',
+                    borderRadius: '4px',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Download
+                </button>
               </div>
 
               {/* Selection indicator */}
@@ -175,10 +215,10 @@ export default function ThumbnailGallery({
         </div>
       )}
 
-      <div className="mt-4 p-3 bg-yellow-50 rounded-lg">
-        <p className="text-sm text-yellow-800">
-          💡 <strong>Note:</strong> These are placeholder thumbnails. In a full implementation, 
-          these would be AI-generated using Stable Diffusion or similar services.
+      <div className="mt-4 p-3 bg-blue-50 rounded-lg">
+        <p className="text-sm text-blue-800">
+          🎨 <strong>AI-Generated:</strong> These thumbnails are created using DALLE-3 based on your video content and title. 
+          Each style offers a different visual approach for your YouTube video.
         </p>
       </div>
     </div>

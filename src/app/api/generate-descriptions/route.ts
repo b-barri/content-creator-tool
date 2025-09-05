@@ -4,7 +4,11 @@ import { supabaseAdmin } from '@/lib/supabase'
 
 export async function POST(request: NextRequest) {
   try {
-    const { transcript, title, transcriptId } = await request.json()
+    const { transcript, title, transcriptId, sampleDescriptions } = await request.json()
+    
+    console.log('API: Received request for description generation')
+    console.log('API: Sample descriptions received:', sampleDescriptions?.length || 0)
+    console.log('API: Sample descriptions:', sampleDescriptions)
     
     if (!transcript) {
       return NextResponse.json({ error: 'Transcript required' }, { status: 400 })
@@ -14,8 +18,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Title required' }, { status: 400 })
     }
 
-    // Generate description using OpenAI
-    const description = await generateDescription(transcript, title)
+    // Generate description using OpenAI with sample analysis
+    const description = await generateDescription(transcript, title, sampleDescriptions)
     
     if (!description) {
       return NextResponse.json({ error: 'Failed to generate description' }, { status: 500 })

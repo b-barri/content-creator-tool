@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 interface TranscriptionStatusProps {
   videoUrl: string
@@ -16,14 +16,21 @@ export default function TranscriptionStatus({
   const [status, setStatus] = useState<'idle' | 'processing' | 'completed' | 'error'>('idle')
   const [progress, setProgress] = useState(0)
   const [error, setError] = useState('')
+  const hasStarted = useRef(false)
 
   useEffect(() => {
-    if (videoUrl) {
+    if (videoUrl && !hasStarted.current && status === 'idle') {
+      hasStarted.current = true
       startTranscription()
     }
-  }, [videoUrl])
+  }, [videoUrl, status])
 
   const startTranscription = async () => {
+    // Prevent multiple simultaneous calls
+    if (status === 'processing') {
+      return
+    }
+
     setStatus('processing')
     setProgress(0)
     setError('')
@@ -49,18 +56,25 @@ export default function TranscriptionStatus({
       const data = await response.json()
 
       if (data.success) {
+        console.log('TranscriptionStatus: Success, calling onTranscriptionComplete')
+        console.log('TranscriptionStatus: Transcript length:', data.transcript?.length || 0)
+        console.log('TranscriptionStatus: ID:', data.id)
         setStatus('completed')
         onTranscriptionComplete(data.transcript, data.id)
       } else {
+        console.log('TranscriptionStatus: Error:', data.error)
         setStatus('error')
         setError(data.error || 'Transcription failed')
         onTranscriptionError(data.error || 'Transcription failed')
       }
     } catch (error) {
-      setStatus('error')
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
-      setError(errorMessage)
-      onTranscriptionError(errorMessage)
+      // Only set error if we're still processing (not completed by another call)
+      if (status === 'processing') {
+        setStatus('error')
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
+        setError(errorMessage)
+        onTranscriptionError(errorMessage)
+      }
     }
   }
 
