@@ -19,6 +19,58 @@ export default function VideoUpload({ onUploadComplete, onUploadError }: VideoUp
   const [uploadProgress, setUploadProgress] = useState(0)
   const [uploadedFile, setUploadedFile] = useState<File | null>(null)
 
+  const uploadFileInChunks = async (file: File) => {
+    const CHUNK_SIZE = 4 * 1024 * 1024 // 4MB chunks (under Vercel's 4.5MB limit)
+    const totalChunks = Math.ceil(file.size / CHUNK_SIZE)
+    const timestamp = Date.now()
+    const fileName = `${timestamp}-${file.name}`
+    
+    console.log(`Uploading ${file.name} in ${totalChunks} chunks`)
+    
+    // Upload chunks
+    for (let i = 0; i < totalChunks; i++) {
+      const start = i * CHUNK_SIZE
+      const end = Math.min(start + CHUNK_SIZE, file.size)
+      const chunk = file.slice(start, end)
+      
+      const formData = new FormData()
+      formData.append('chunk', chunk)
+      formData.append('fileName', fileName)
+      formData.append('chunkIndex', i.toString())
+      formData.append('totalChunks', totalChunks.toString())
+      
+      const response = await fetch('/api/upload-chunk', {
+        method: 'POST',
+        body: formData,
+      })
+      
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.details || 'Chunk upload failed')
+      }
+      
+      // Update progress
+      const chunkProgress = ((i + 1) / totalChunks) * 80 // 80% for chunk upload
+      setUploadProgress(chunkProgress)
+    }
+    
+    // Complete upload
+    const completeResponse = await fetch('/api/upload-complete', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ fileName, totalChunks })
+    })
+    
+    if (!completeResponse.ok) {
+      const errorData = await completeResponse.json()
+      throw new Error(errorData.details || 'Upload completion failed')
+    }
+    
+    const data = await completeResponse.json()
+    setUploadProgress(100)
+    return data
+  }
+
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     const file = acceptedFiles[0]
     if (!file) return
@@ -28,44 +80,57 @@ export default function VideoUpload({ onUploadComplete, onUploadError }: VideoUp
     setUploadProgress(0)
 
     try {
-      const formData = new FormData()
-      formData.append('file', file)
-
-      // Simulate progress for better UX
-      const progressInterval = setInterval(() => {
-        setUploadProgress(prev => {
-          if (prev >= 90) {
-            clearInterval(progressInterval)
-            return prev
-          }
-          return prev + Math.random() * 10
-        })
-      }, 200)
-
-      const response = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData,
-      })
-
-      clearInterval(progressInterval)
-      setUploadProgress(100)
-
-      const data = await response.json()
+      let data
       
-      console.log('Upload response:', { status: response.status, data })
+      // Use chunked upload for files larger than 4MB
+      if (file.size > 4 * 1024 * 1024) {
+        console.log('Using chunked upload for large file')
+        data = await uploadFileInChunks(file)
+      } else {
+        console.log('Using regular upload for small file')
+        const formData = new FormData()
+        formData.append('file', file)
 
-      if (response.ok && data.success) {
+        // Simulate progress for better UX
+        const progressInterval = setInterval(() => {
+          setUploadProgress(prev => {
+            if (prev >= 90) {
+              clearInterval(progressInterval)
+              return prev
+            }
+            return prev + Math.random() * 10
+          })
+        }, 200)
+
+        const response = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData,
+        })
+
+        clearInterval(progressInterval)
+        setUploadProgress(100)
+
+        data = await response.json()
+        
+        if (!response.ok) {
+          throw new Error(data.details || data.error || 'Upload failed')
+        }
+      }
+      
+      console.log('Upload response:', data)
+
+      if (data.success) {
         onUploadComplete(data)
       } else {
         console.error('Upload failed with response:', data)
         const errorMessage = data.details 
           ? `${data.error}: ${data.details}` 
-          : data.error || `Upload failed (${response.status})`
+          : data.error || 'Upload failed'
         onUploadError(errorMessage)
       }
     } catch (error) {
       console.error('Upload error:', error)
-      onUploadError('Upload failed. Please try again.')
+      onUploadError(error instanceof Error ? error.message : 'Upload failed. Please try again.')
     } finally {
       setUploading(false)
       setTimeout(() => setUploadProgress(0), 1000)
