@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase'
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     console.log('=== TESTING SUPABASE CONNECTION ===')
     console.log('Environment variables check:')
@@ -30,12 +30,12 @@ export async function GET(request: NextRequest) {
     console.log('Available buckets:', buckets)
     
     // Check if videos bucket exists
-    const videosBucket = buckets?.find(bucket => bucket.name === 'videos')
+    const videosBucket = buckets?.find((bucket: any) => bucket.name === 'videos')
     
     return NextResponse.json({
       success: true,
       message: 'Supabase connection successful',
-      buckets: buckets?.map(b => ({ name: b.name, public: b.public })),
+      buckets: buckets?.map((b: any) => ({ name: b.name, public: b.public })),
       videosBucketExists: !!videosBucket,
       envVarsSet: {
         url: !!process.env.NEXT_PUBLIC_SUPABASE_URL,

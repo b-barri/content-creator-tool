@@ -10,7 +10,8 @@ const createFetchWithSSLBypass = () => {
   if (typeof process !== 'undefined' && process.env.NODE_ENV === 'development') {
     // For Node.js environments (API routes), use a custom fetch that bypasses SSL
     return async (url: RequestInfo | URL, options?: RequestInit) => {
-      const https = require('https');
+      // Dynamic import to avoid require() ESLint error
+      const https = await import('https');
       const originalAgent = https.globalAgent;
       
       // Temporarily disable SSL verification
