@@ -4,14 +4,6 @@
       "maxDuration": 300
     }
   },
-  "env": {
-    "NEXT_PUBLIC_SUPABASE_URL": "@supabase-url",
-    "NEXT_PUBLIC_SUPABASE_ANON_KEY": "@supabase-anon-key",
-    "SUPABASE_SERVICE_ROLE_KEY": "@supabase-service-role-key",
-    "OPENAI_API_KEY": "@openai-api-key",
-    "GOOGLE_APPLICATION_CREDENTIALS": "@google-credentials-path",
-    "GOOGLE_CLOUD_PROJECT_ID": "@google-project-id"
-  },
   "build": {
     "env": {
       "NEXT_TELEMETRY_DISABLED": "1"
