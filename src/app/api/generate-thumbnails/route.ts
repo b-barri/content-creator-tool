@@ -101,8 +101,8 @@ interface BrandingOptions {
 }
 
 function generateThumbnailPrompt(title: string, transcript: string, branding?: BrandingOptions): string {
-  // Start with neutral, descriptive seed
-  let prompt = "Photorealistic YouTube thumbnail on a white background"
+  // Start with enhanced photorealism seed
+  let prompt = "Ultra-photorealistic, high-resolution YouTube thumbnail with professional photography quality, sharp focus, studio lighting, and crisp details"
 
   // Conditionally append title (only if title exists)
   if (title && title.trim()) {
@@ -117,15 +117,15 @@ function generateThumbnailPrompt(title: string, transcript: string, branding?: B
   // Generate short hook from title if it's <= 30 characters
   const shortHook = generateShortHook(title)
   if (shortHook && shortHook.length <= 30) {
-    prompt += ` with bold text overlay saying '${shortHook}'`
+    prompt += ` with bold, readable text overlay saying '${shortHook}'`
   }
 
-  // Always add guidance for visual elements
-  prompt += "; containing all visual elements from the reference pictures; eye-catching, vibrant colors, high contrast"
+  // Enhanced guidance for visual elements with technical photography terms
+  prompt += "; professional composition with rule of thirds, depth of field, vibrant colors with high contrast, sharp focus, natural lighting, 4K quality details"
 
   // Add brand constraints if brand colors are provided
   if (branding?.brandColors) {
-    prompt += `; prefer accents ${branding.brandColors}; keep text legible at small sizes`
+    prompt += `; prefer accents ${branding.brandColors}; keep text legible at small sizes with high contrast`
   }
 
   return prompt
@@ -169,15 +169,15 @@ async function generateThumbnailsWithDALLE3(basePrompt: string) {
     const thumbnailStyles = [
       {
         style: 'Bold and Eye-catching',
-        promptModifier: 'Bold, vibrant colors, dynamic composition, strong contrast, energetic feel'
+        promptModifier: 'Bold, vibrant colors, dynamic composition, strong contrast, energetic feel, professional photography, sharp focus, dramatic lighting'
       },
       {
         style: 'Clean and Professional', 
-        promptModifier: 'Clean, minimalist design, professional colors, sleek typography, corporate aesthetic'
+        promptModifier: 'Clean, minimalist design, professional colors, sleek typography, corporate aesthetic, studio lighting, crisp details, high resolution'
       },
       {
         style: 'Modern and Trendy',
-        promptModifier: 'Modern, trendy design, contemporary colors, stylish layout, current design trends'
+        promptModifier: 'Modern, trendy design, contemporary colors, stylish layout, current design trends, professional photography, sharp focus, natural lighting'
       }
     ]
 
@@ -187,13 +187,13 @@ async function generateThumbnailsWithDALLE3(basePrompt: string) {
       const enhancedPrompt = `${basePrompt}. ${styleConfig.promptModifier}. High quality, professional thumbnail design, 16:9 aspect ratio, optimized for YouTube platform`
       
       try {
-        console.log(`Generating ${styleConfig.style} thumbnail with DALLE-3...`)
+        console.log(`Generating ${styleConfig.style} thumbnail with DALLE-3 HD quality...`)
         
         const response = await getOpenAI().images.generate({
           model: 'dall-e-3',
           prompt: enhancedPrompt,
           size: '1792x1024',
-          quality: 'standard',
+          quality: 'hd',
           n: 1
         })
 
