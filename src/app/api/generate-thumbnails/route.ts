@@ -4,13 +4,24 @@ import openai from '@/lib/openai'
 
 export async function POST(request: NextRequest) {
   try {
-    const { transcript, title, transcriptId, prompt } = await request.json()
+    const { 
+      transcript, 
+      title, 
+      transcriptId, 
+      prompt,
+      channelName,
+      channelNiche,
+      brandColors
+    } = await request.json()
     
     console.log('=== THUMBNAIL GENERATION REQUEST ===')
     console.log('Title:', title)
     console.log('Transcript length:', transcript?.length)
     console.log('TranscriptId:', transcriptId)
     console.log('Custom prompt:', prompt)
+    console.log('Channel name:', channelName)
+    console.log('Channel niche:', channelNiche)
+    console.log('Brand colors:', brandColors)
     
     if (!transcript) {
       return NextResponse.json({ error: 'Transcript required' }, { status: 400 })
@@ -20,8 +31,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Title required' }, { status: 400 })
     }
 
-    // Generate thumbnail prompt based on title and transcript
-    const thumbnailPrompt = prompt || generateThumbnailPrompt(title, transcript)
+    // Generate thumbnail prompt based on title and transcript with branding
+    const thumbnailPrompt = prompt || generateThumbnailPrompt(title, transcript, {
+      channelName,
+      channelNiche,
+      brandColors
+    })
     console.log('Generated thumbnail prompt:', thumbnailPrompt)
     
     // Generate thumbnails using DALLE-3
@@ -79,15 +94,69 @@ export async function POST(request: NextRequest) {
   }
 }
 
-function generateThumbnailPrompt(title: string, transcript: string): string {
-  // Extract key concepts from title and transcript
-  const keyWords = title.split(' ').filter(word => 
-    word.length > 3 && 
-    !['the', 'and', 'for', 'with', 'this', 'that', 'from', 'they', 'have', 'been', 'were', 'said', 'each', 'which', 'their', 'time', 'will', 'about', 'there', 'could', 'other', 'after', 'first', 'well', 'also', 'where', 'much', 'some', 'very', 'when', 'come', 'here', 'just', 'like', 'long', 'make', 'many', 'over', 'such', 'take', 'than', 'them', 'these', 'so', 'use', 'her', 'him', 'two', 'more', 'go', 'no', 'way', 'may', 'say', 'she', 'use', 'her', 'his', 'how', 'its', 'now', 'find', 'long', 'down', 'day', 'did', 'get', 'has', 'had', 'him', 'his', 'how', 'man', 'new', 'now', 'old', 'see', 'two', 'way', 'who', 'boy', 'did', 'its', 'let', 'put', 'say', 'she', 'too', 'use'].includes(word.toLowerCase())
-  ).slice(0, 5)
+interface BrandingOptions {
+  channelName?: string;
+  channelNiche?: string;
+  brandColors?: string;
+}
 
-  // Enhanced prompt specifically optimized for DALLE-3 YouTube thumbnails
-  return `Professional YouTube thumbnail design for "${title}". Features: ${keyWords.join(', ')}. Style: Modern, eye-catching, high contrast colors, bold readable text overlay, professional composition, engaging visual elements, YouTube-optimized aspect ratio 16:9, vibrant colors`
+function generateThumbnailPrompt(title: string, transcript: string, branding?: BrandingOptions): string {
+  // Start with neutral, descriptive seed
+  let prompt = "Photorealistic YouTube thumbnail on a white background"
+
+  // Conditionally append title (only if title exists)
+  if (title && title.trim()) {
+    prompt += ` for a video titled '${title}'`
+  }
+
+  // Conditionally append branding (only if branding exists)
+  if (branding?.channelName && branding?.channelNiche) {
+    prompt += ` in the style of ${branding.channelName} (${branding.channelNiche} channel)`
+  }
+
+  // Generate short hook from title if it's <= 30 characters
+  const shortHook = generateShortHook(title)
+  if (shortHook && shortHook.length <= 30) {
+    prompt += ` with bold text overlay saying '${shortHook}'`
+  }
+
+  // Always add guidance for visual elements
+  prompt += "; containing all visual elements from the reference pictures; eye-catching, vibrant colors, high contrast"
+
+  // Add brand constraints if brand colors are provided
+  if (branding?.brandColors) {
+    prompt += `; prefer accents ${branding.brandColors}; keep text legible at small sizes`
+  }
+
+  return prompt
+}
+
+function generateShortHook(title: string): string {
+  if (!title) return ""
+  
+  // If title is already short enough, use it
+  if (title.length <= 30) {
+    return title
+  }
+
+  // Extract key words and create a shorter hook
+  const stopWords = ['the', 'and', 'for', 'with', 'this', 'that', 'from', 'they', 'have', 'been', 'were', 'said', 'each', 'which', 'their', 'time', 'will', 'about', 'there', 'could', 'other', 'after', 'first', 'well', 'also', 'where', 'much', 'some', 'very', 'when', 'come', 'here', 'just', 'like', 'long', 'make', 'many', 'over', 'such', 'take', 'than', 'them', 'these', 'how', 'its', 'now', 'find', 'down', 'day', 'did', 'get', 'has', 'had', 'him', 'his', 'man', 'new', 'old', 'see', 'two', 'way', 'who', 'boy', 'let', 'put', 'say', 'she', 'too', 'use']
+  
+  const keyWords = title.split(' ')
+    .filter(word => 
+      word.length > 2 && 
+      !stopWords.includes(word.toLowerCase())
+    )
+    .slice(0, 3) // Take top 3 key words
+
+  let hook = keyWords.join(' ')
+  
+  // If still too long, truncate and add ellipsis
+  if (hook.length > 27) {
+    hook = hook.substring(0, 27) + "..."
+  }
+  
+  return hook || title.substring(0, 27) + (title.length > 27 ? "..." : "")
 }
 
 async function generateThumbnailsWithDALLE3(basePrompt: string) {

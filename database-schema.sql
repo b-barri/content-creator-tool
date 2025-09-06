@@ -43,26 +43,18 @@ CREATE TABLE IF NOT EXISTS sample_titles (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- Create sample_descriptions table for user-provided successful descriptions
-CREATE TABLE IF NOT EXISTS sample_descriptions (
+-- Create channel_branding table for storing channel branding information
+CREATE TABLE IF NOT EXISTS channel_branding (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  description TEXT NOT NULL,
-  category TEXT,
-  performance_metrics JSONB, -- views, engagement, etc.
+  channel_name TEXT NOT NULL,
+  channel_niche TEXT, -- e.g., "tech", "gaming", "lifestyle", "education"
+  brand_colors TEXT, -- e.g., "blue and white", "red, yellow, black"
+  is_default BOOLEAN DEFAULT false, -- mark if this is the default branding to use
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- Create indexes for better performance
-CREATE INDEX IF NOT EXISTS idx_transcriptions_video_url ON transcriptions(video_url);
-CREATE INDEX IF NOT EXISTS idx_transcriptions_status ON transcriptions(status);
-CREATE INDEX IF NOT EXISTS idx_transcriptions_created_at ON transcriptions(created_at);
-CREATE INDEX IF NOT EXISTS idx_generated_content_transcript_id ON generated_content(transcript_id);
-CREATE INDEX IF NOT EXISTS idx_thumbnails_transcript_id ON thumbnails(transcript_id);
-CREATE INDEX IF NOT EXISTS idx_sample_titles_category ON sample_titles(category);
-CREATE INDEX IF NOT EXISTS idx_sample_titles_created_at ON sample_titles(created_at);
-CREATE INDEX IF NOT EXISTS idx_sample_descriptions_category ON sample_descriptions(category);
-CREATE INDEX IF NOT EXISTS idx_sample_descriptions_created_at ON sample_descriptions(created_at);
+
 
 -- Enable Row Level Security (RLS)
 ALTER TABLE transcriptions ENABLE ROW LEVEL SECURITY;
@@ -70,6 +62,7 @@ ALTER TABLE generated_content ENABLE ROW LEVEL SECURITY;
 ALTER TABLE thumbnails ENABLE ROW LEVEL SECURITY;
 ALTER TABLE sample_titles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE sample_descriptions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE channel_branding ENABLE ROW LEVEL SECURITY;
 
 -- Create policies for public access (adjust as needed for your security requirements)
 CREATE POLICY "Allow public access to transcriptions" ON transcriptions FOR ALL USING (true);
@@ -77,6 +70,7 @@ CREATE POLICY "Allow public access to generated_content" ON generated_content FO
 CREATE POLICY "Allow public access to thumbnails" ON thumbnails FOR ALL USING (true);
 CREATE POLICY "Allow public access to sample_titles" ON sample_titles FOR ALL USING (true);
 CREATE POLICY "Allow public access to sample_descriptions" ON sample_descriptions FOR ALL USING (true);
+CREATE POLICY "Allow public access to channel_branding" ON channel_branding FOR ALL USING (true);
 
 -- Create function to update updated_at timestamp
 CREATE OR REPLACE FUNCTION update_updated_at_column()
@@ -105,5 +99,10 @@ CREATE TRIGGER update_sample_titles_updated_at
 
 CREATE TRIGGER update_sample_descriptions_updated_at 
     BEFORE UPDATE ON sample_descriptions 
+    FOR EACH ROW 
+    EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_channel_branding_updated_at 
+    BEFORE UPDATE ON channel_branding 
     FOR EACH ROW 
     EXECUTE FUNCTION update_updated_at_column();

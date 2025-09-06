@@ -136,7 +136,14 @@ export default function Home() {
     }
   }
 
-  const generateThumbnails = async (title: string) => {
+  const generateThumbnails = async (title: string, branding?: { 
+    channelName: string; 
+    channelNiche: string; 
+    brandColors: string; 
+    hexColors: string[]; 
+    referenceImage?: string;
+    textOverlay: string;
+  }) => {
     setIsGeneratingThumbnails(true)
     try {
       const response = await fetch('/api/generate-thumbnails', {
@@ -145,7 +152,13 @@ export default function Home() {
         body: JSON.stringify({
           transcript,
           title,
-          transcriptId
+          transcriptId,
+          channelName: branding?.channelName,
+          channelNiche: branding?.channelNiche,
+          brandColors: branding?.brandColors,
+          hexColors: branding?.hexColors,
+          referenceImage: branding?.referenceImage,
+          textOverlay: branding?.textOverlay
         })
       })
 
@@ -191,6 +204,7 @@ export default function Home() {
   const handleThumbnailSelect = (thumbnail: any) => {
     setSelectedThumbnail(thumbnail)
   }
+
 
   return (
     <main className="min-h-screen bg-gray-50 py-8">
