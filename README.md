@@ -140,6 +140,9 @@ npm run test:coverage
 
 ## 🚀 Deployment
 
+### Live Demo
+🌐 **[https://buildathon-gamma.vercel.app/](https://buildathon-gamma.vercel.app/)**
+
 ### Vercel (Recommended)
 
 1. Push your code to GitHub
