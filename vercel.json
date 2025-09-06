@@ -3,10 +3,5 @@
     "src/app/api/**/*.ts": {
       "maxDuration": 300
     }
-  },
-  "build": {
-    "env": {
-      "NEXT_TELEMETRY_DISABLED": "1"
-    }
   }
 }
