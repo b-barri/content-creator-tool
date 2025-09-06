@@ -1,10 +1,21 @@
 import OpenAI from 'openai'
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-})
+// Lazy initialization to avoid build-time errors
+let openai: OpenAI | null = null
 
-export default openai
+function getOpenAI() {
+  if (!openai) {
+    if (!process.env.OPENAI_API_KEY) {
+      throw new Error('OPENAI_API_KEY environment variable is not set')
+    }
+    openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+    })
+  }
+  return openai
+}
+
+export default getOpenAI
 
 // Transcription function
 export async function transcribeVideo(videoUrl: string) {
@@ -35,7 +46,7 @@ export async function transcribeVideo(videoUrl: string) {
     
     console.log('Sending to OpenAI Whisper...')
     
-    const transcription = await openai.audio.transcriptions.create({
+    const transcription = await getOpenAI().audio.transcriptions.create({
       file: videoFile,
       model: 'whisper-1',
       response_format: 'text',
@@ -105,7 +116,7 @@ export async function generateTitles(transcript: string, sampleTitles?: string[]
       Return only the titles, one per line.
     `
     
-    const completion = await openai.chat.completions.create({
+    const completion = await getOpenAI().chat.completions.create({
       model: 'gpt-4o-mini', // Using GPT-4 for better style analysis
       messages: [{ role: 'user', content: prompt }],
       max_tokens: 400,
@@ -178,7 +189,7 @@ export async function generateDescription(transcript: string, title: string, sam
       Format it properly with line breaks.
     `
     
-    const completion = await openai.chat.completions.create({
+    const completion = await getOpenAI().chat.completions.create({
       model: 'gpt-4o-mini', // Using GPT-4 for better style analysis
       messages: [{ role: 'user', content: prompt }],
       max_tokens: 600,

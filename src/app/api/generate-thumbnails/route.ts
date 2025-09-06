@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase'
-import openai from '@/lib/openai'
+import getOpenAI from '@/lib/openai'
 
 export async function POST(request: NextRequest) {
   try {
@@ -189,7 +189,7 @@ async function generateThumbnailsWithDALLE3(basePrompt: string) {
       try {
         console.log(`Generating ${styleConfig.style} thumbnail with DALLE-3...`)
         
-        const response = await openai.images.generate({
+        const response = await getOpenAI().images.generate({
           model: 'dall-e-3',
           prompt: enhancedPrompt,
           size: '1792x1024',
