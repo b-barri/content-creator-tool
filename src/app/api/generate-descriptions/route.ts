@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
     // Store generated description in database if transcriptId is provided
     if (transcriptId) {
       try {
-        const { data, error } = await supabaseAdmin
+        const { data, error } = await supabaseAdmin()
           .from('generated_content')
           .upsert({
             transcript_id: transcriptId,

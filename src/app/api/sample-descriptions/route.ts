@@ -3,7 +3,7 @@ import { supabaseAdmin } from '@/lib/supabase'
 
 export async function GET() {
   try {
-    const { data, error } = await supabaseAdmin
+    const { data, error } = await supabaseAdmin()
       .from('sample_descriptions')
       .select('*')
       .order('created_at', { ascending: false })
@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Insert sample descriptions
-    const { data, error } = await supabaseAdmin
+    const { data, error } = await supabaseAdmin()
       .from('sample_descriptions')
       .insert(descriptions.map(description => ({
         description: description.trim(),

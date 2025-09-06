@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
     if (transcriptId) {
       try {
         for (const thumbnail of thumbnails) {
-          await supabaseAdmin
+          await supabaseAdmin()
             .from('thumbnails')
             .insert({
               transcript_id: transcriptId,

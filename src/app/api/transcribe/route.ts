@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if transcription already exists
-    const { data: existingTranscription } = await supabaseAdmin
+    const { data: existingTranscription } = await supabaseAdmin()
       .from('transcriptions')
       .select('*')
       .eq('video_url', videoUrl)
@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Create initial record with pending status
-    const { data: transcriptionRecord, error: insertError } = await supabaseAdmin
+    const { data: transcriptionRecord, error: insertError } = await supabaseAdmin()
       .from('transcriptions')
       .insert({
         video_url: videoUrl,
@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
       const transcript = await transcribeVideo(videoUrl)
       
       // Update record with transcript
-      const { data, error: updateError } = await supabaseAdmin
+      const { data, error: updateError } = await supabaseAdmin()
         .from('transcriptions')
         .update({
           transcript: transcript,
@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
 
             } catch (transcriptionError) {
           // Update record with error status
-          await supabaseAdmin
+          await supabaseAdmin()
             .from('transcriptions')
             .update({
               status: 'failed',

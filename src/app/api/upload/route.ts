@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
     console.log('Uploading file:', fileName, 'Size:', file.size, 'Type:', file.type)
     console.log('Using Supabase admin client')
     
-    const { data, error } = await supabaseAdmin.storage
+    const { data, error } = await supabaseAdmin().storage
       .from('videos')
       .upload(fileName, file)
     
@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
     }
     
     // Get public URL
-    const { data: urlData } = supabaseAdmin.storage
+    const { data: urlData } = supabaseAdmin().storage
       .from('videos')
       .getPublicUrl(fileName)
     

@@ -8,7 +8,7 @@ export async function GET(request: NextRequest) {
     const category = searchParams.get('category')
     const limit = parseInt(searchParams.get('limit') || '50')
 
-    let query = supabaseAdmin
+    let query = supabaseAdmin()
       .from('sample_titles')
       .select('*')
       .order('created_at', { ascending: false })
@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
       performance_metrics: performanceMetrics || null
     }))
 
-    const { data, error } = await supabaseAdmin
+    const { data, error } = await supabaseAdmin()
       .from('sample_titles')
       .insert(sampleTitlesData)
       .select()
@@ -93,7 +93,7 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'ID or category required for deletion' }, { status: 400 })
     }
 
-    let query = supabaseAdmin.from('sample_titles').delete()
+    let query = supabaseAdmin().from('sample_titles').delete()
 
     if (id) {
       query = query.eq('id', id)
