@@ -5,6 +5,31 @@ if (typeof process !== 'undefined' && process.env.NODE_ENV === 'development') {
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
 }
 
+// Create fetch function that bypasses SSL issues
+const createFetchWithSSLBypass = () => {
+  if (typeof process !== 'undefined' && process.env.NODE_ENV === 'development') {
+    // For Node.js environments (API routes), use a custom fetch that bypasses SSL
+    return async (url: RequestInfo | URL, options?: RequestInit) => {
+      const https = require('https');
+      const originalAgent = https.globalAgent;
+      
+      // Temporarily disable SSL verification
+      https.globalAgent = new https.Agent({
+        rejectUnauthorized: false
+      });
+      
+      try {
+        const response = await fetch(url, options);
+        return response;
+      } finally {
+        // Restore original agent
+        https.globalAgent = originalAgent;
+      }
+    };
+  }
+  return fetch; // Use default fetch for browser/production
+};
+
 // Lazy initialization to avoid build-time errors
 let supabaseInstance: any = null
 let supabaseAdminInstance: any = null
@@ -18,7 +43,11 @@ function getSupabase() {
       throw new Error('Supabase environment variables are not set')
     }
     
-    supabaseInstance = createClient(supabaseUrl, supabaseAnonKey)
+    supabaseInstance = createClient(supabaseUrl, supabaseAnonKey, {
+      global: {
+        fetch: createFetchWithSSLBypass()
+      }
+    })
   }
   return supabaseInstance
 }
@@ -39,6 +68,9 @@ function getSupabaseAdmin() {
         auth: {
           persistSession: false,
           autoRefreshToken: false
+        },
+        global: {
+          fetch: createFetchWithSSLBypass()
         }
       }
     )
