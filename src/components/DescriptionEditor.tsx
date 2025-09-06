@@ -158,7 +158,7 @@ export default function DescriptionEditor({
           </div>
           <h3 className="text-xl font-semibold text-slate-800 mb-2">No description generated yet</h3>
           {selectedTitle && (
-            <p className="text-slate-600">Select a title above and click "Generate Description" to create one.</p>
+            <p className="text-slate-600">Select a title above and click &quot;Generate Description&quot; to create one.</p>
           )}
         </div>
       )}
@@ -210,9 +210,9 @@ export default function DescriptionEditor({
             </span>
             <span>
               {localDescription.length > 5000 ? (
-                <span className="text-orange-600 font-medium">⚠️ Exceeds YouTube's 5000 character limit</span>
+                <span className="text-orange-600 font-medium">⚠️ Exceeds YouTube&apos;s 5000 character limit</span>
               ) : (
-                <span className="text-green-600 font-medium">✓ Within YouTube's 5000 character limit</span>
+                <span className="text-green-600 font-medium">✓ Within YouTube&apos;s 5000 character limit</span>
               )}
             </span>
           </div>

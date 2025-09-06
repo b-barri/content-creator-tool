@@ -40,7 +40,7 @@ export default function CurvedText() {
               repeatDelay: 0
             }}
           >
-            "Upload your video, let AI learn your style, watch your content perform better than ever" • "Upload your video, let AI learn your style, watch your content perform better than ever" • "Upload your video, let AI learn your style, watch your content perform better than ever" • 
+            &quot;Upload your video, let AI learn your style, watch your content perform better than ever&quot; • &quot;Upload your video, let AI learn your style, watch your content perform better than ever&quot; • &quot;Upload your video, let AI learn your style, watch your content perform better than ever&quot; • 
           </motion.textPath>
         </motion.text>
 
@@ -70,7 +70,7 @@ export default function CurvedText() {
               strokeWidth="4"
               paintOrder="stroke fill"
             >
-              "Upload your video, let AI learn your style, watch your content perform better than ever" • "Upload your video, let AI learn your style, watch your content perform better than ever" • "Upload your video, let AI learn your style, watch your content perform better than ever" • 
+              &quot;Upload your video, let AI learn your style, watch your content perform better than ever&quot; • &quot;Upload your video, let AI learn your style, watch your content perform better than ever&quot; • &quot;Upload your video, let AI learn your style, watch your content perform better than ever&quot; • 
             </tspan>
           </motion.textPath>
         </motion.text>

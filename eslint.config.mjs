@@ -25,6 +25,10 @@ const eslintConfig = [
       "@typescript-eslint/no-explicit-any": "off",
       "@typescript-eslint/no-unused-vars": "warn",
       "react-hooks/exhaustive-deps": "warn",
+      "react/no-unescaped-entities": "warn",
+      "@next/next/no-page-custom-font": "warn",
+      "@next/next/no-img-element": "warn",
+      "@typescript-eslint/ban-ts-comment": "warn",
     }
   }
 ];

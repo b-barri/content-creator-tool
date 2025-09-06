@@ -229,7 +229,7 @@ export default function Home() {
           {/* Main Headline */}
           <div className="text-center mb-16">
             <h1 className="serif-heading text-6xl md:text-8xl font-light mb-8 leading-[1.1] tracking-tight">
-              <span className="text-[#888888]">Don't stress,</span> <span className="font-normal text-black">just upload</span>
+              <span className="text-[#888888]">Don&apos;t stress,</span> <span className="font-normal text-black">just upload</span>
             </h1>
             
             {/* Sub headline */}
@@ -340,11 +340,6 @@ export default function Home() {
               <h3 className="text-3xl font-light text-[#000000] mb-4">Video Description</h3>
               <p className="text-lg font-light text-[#777777]">Generate compelling descriptions that drive engagement</p>
             </div>
-            {console.log('Page: Rendering DescriptionEditor with description:', !!description, 'Length:', description?.length || 0)}
-            {console.log('Page: description value:', description)}
-            {console.log('Page: description === undefined:', description === undefined)}
-            {console.log('Page: description === null:', description === null)}
-            {console.log('Page: description === "":', description === '')}
             <DescriptionEditor
               description={description}
               onDescriptionChange={handleDescriptionChange}

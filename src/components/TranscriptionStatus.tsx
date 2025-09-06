@@ -68,13 +68,16 @@ export default function TranscriptionStatus({
         onTranscriptionError(data.error || 'Transcription failed')
       }
     } catch (error) {
-      // Only set error if we're still processing (not completed by another call)
-      if (status === 'processing') {
-        setStatus('error')
-        const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
-        setError(errorMessage)
-        onTranscriptionError(errorMessage)
-      }
+      // Only set error if we haven't already completed successfully
+      setStatus((currentStatus) => {
+        if (currentStatus === 'processing') {
+          const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
+          setError(errorMessage)
+          onTranscriptionError(errorMessage)
+          return 'error'
+        }
+        return currentStatus
+      })
     }
   }
 

@@ -207,7 +207,7 @@ export default function ThumbnailGallery({
             {!selectedTitle && (
               <div className="mt-3 p-3 bg-yellow-50 rounded-lg">
                 <p className="text-sm text-yellow-800">
-                  <strong>📝 Next Step:</strong> Go to the "Title Generator" section above and select a title for your video.
+                  <strong>📝 Next Step:</strong> Go to the &quot;Title Generator&quot; section above and select a title for your video.
                 </p>
               </div>
             )}
@@ -569,7 +569,7 @@ export default function ThumbnailGallery({
             
             {/* Preview section */}
             <div className="mb-6 p-3 bg-blue-50 rounded-lg">
-              <h4 className="text-sm font-medium text-blue-900 mb-2">📋 What you'll get:</h4>
+              <h4 className="text-sm font-medium text-blue-900 mb-2">📋 What you&apos;ll get:</h4>
               <ul className="text-xs text-blue-800 space-y-1">
                 <li>• Thumbnails styled for your channel aesthetic</li>
                 <li>• Text overlays optimized for your brand colors</li>

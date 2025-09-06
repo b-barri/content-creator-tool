@@ -59,7 +59,7 @@ export default function TitleGenerator({
           </svg>
         </div>
         <h3 className="text-xl font-semibold text-slate-800 mb-2">No titles generated yet</h3>
-        <p className="text-slate-600 mb-4">Add sample titles above or click "Skip & Generate Titles" to create titles from your transcript.</p>
+        <p className="text-slate-600 mb-4">Add sample titles above or click &quot;Skip &amp; Generate Titles&quot; to create titles from your transcript.</p>
       </div>
     )
   }
@@ -128,7 +128,7 @@ export default function TitleGenerator({
       <div className="mt-6 p-4 bg-gradient-to-r from-orange-50 to-orange-100 rounded-2xl border border-orange-200">
         <p className="text-sm text-orange-800 font-medium">
           💡 <strong>Pro Tip:</strong> Click on a title to select it for description generation. 
-          These titles are optimized for YouTube's algorithm and maximum engagement.
+          These titles are optimized for YouTube&apos;s algorithm and maximum engagement.
         </p>
       </div>
     </div>
