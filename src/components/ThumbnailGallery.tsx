@@ -121,20 +121,25 @@ export default function ThumbnailGallery({
 
   if (isLoading) {
     return (
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Generating Thumbnails...</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="text-center py-12">
+        <div className="inline-flex items-center space-x-3">
+          <div className="w-8 h-8 gradient-orange rounded-full animate-spin flex items-center justify-center">
+            <div className="w-4 h-4 bg-white rounded-full"></div>
+          </div>
+          <span className="text-lg font-semibold text-slate-700">Creating stunning thumbnails...</span>
+        </div>
+        <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
           {[1, 2, 3].map((i) => (
             <div key={i} className="animate-pulse">
-              <div className="aspect-video bg-gray-200 rounded-lg mb-2"></div>
-              <div className="h-4 bg-gray-200 rounded w-3/4 mb-1"></div>
-              <div className="h-3 bg-gray-100 rounded w-1/2"></div>
+              <div className="aspect-video bg-slate-200 rounded-2xl mb-3"></div>
+              <div className="h-5 bg-slate-200 rounded-lg w-3/4 mb-2"></div>
+              <div className="h-3 bg-slate-100 rounded w-1/2"></div>
             </div>
           ))}
+        </div>
       </div>
-    </div>
-  )
-}
+    )
+  }
 
   if (thumbnails.length === 0) {
     return (
@@ -382,15 +387,15 @@ export default function ThumbnailGallery({
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-gray-900">
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h3 className="text-2xl font-bold text-slate-800">
           Generated Thumbnails ({thumbnails.length})
         </h3>
         {selectedTitle && (
           <button
             onClick={() => setShowBrandingForm(true)}
-            className="px-4 py-2 text-sm bg-purple-600 text-white rounded hover:bg-purple-700 transition-colors"
+            className="btn-primary"
           >
             Generate More
           </button>

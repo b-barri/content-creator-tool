@@ -79,25 +79,25 @@ export default function DescriptionEditor({
   console.log('DescriptionEditor: localDescription:', localDescription?.substring(0, 50) + '...')
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
-      <div className="flex items-center justify-between mb-4">
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
-          <h3 className="text-lg font-semibold text-gray-900">YouTube Description</h3>
+          <h3 className="text-2xl font-bold text-slate-800">Video Description</h3>
           {sampleDescriptionsCount > 0 && (
-            <div className="flex items-center space-x-2 text-sm text-blue-600">
+            <div className="flex items-center space-x-2 text-sm text-orange-600 bg-orange-50 px-3 py-1 rounded-full">
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
               </svg>
-              <span>Analyzed {sampleDescriptionsCount} sample description{sampleDescriptionsCount !== 1 ? 's' : ''}</span>
+              <span className="font-medium">Analyzed {sampleDescriptionsCount} sample description{sampleDescriptionsCount !== 1 ? 's' : ''}</span>
             </div>
           )}
         </div>
-        <div className="flex space-x-2">
+        <div className="flex space-x-3">
           {selectedTitle && !description && (
             <button
               onClick={() => onGenerateDescription(selectedTitle)}
               disabled={isLoading}
-              className="px-4 py-2 text-sm bg-green-600 text-white rounded hover:bg-green-700 disabled:bg-gray-400 transition-colors"
+              className="btn-primary disabled:bg-slate-400 disabled:cursor-not-allowed"
             >
               {isLoading ? 'Generating...' : 'Generate Description'}
             </button>
@@ -106,7 +106,7 @@ export default function DescriptionEditor({
             <>
               <button
                 onClick={handleCopy}
-                className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors flex items-center space-x-1"
+                className="px-4 py-2 text-sm bg-slate-100 text-slate-700 rounded-xl hover:bg-slate-200 transition-colors flex items-center space-x-2 font-medium"
               >
                 {copied ? (
                   <>
@@ -126,7 +126,7 @@ export default function DescriptionEditor({
               </button>
               <button
                 onClick={handleDownload}
-                className="px-3 py-1 text-sm bg-gray-600 text-white rounded hover:bg-gray-700 transition-colors flex items-center space-x-1"
+                className="px-4 py-2 text-sm bg-slate-100 text-slate-700 rounded-xl hover:bg-slate-200 transition-colors flex items-center space-x-2 font-medium"
               >
                 <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -139,85 +139,89 @@ export default function DescriptionEditor({
       </div>
 
       {isLoading && (
-        <div className="mb-4 p-4 bg-blue-50 rounded-lg">
-          <div className="flex items-center space-x-2">
-            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
-            <span className="text-blue-800">Generating description...</span>
+        <div className="text-center py-12">
+          <div className="inline-flex items-center space-x-3">
+            <div className="w-8 h-8 gradient-orange rounded-full animate-spin flex items-center justify-center">
+              <div className="w-4 h-4 bg-white rounded-full"></div>
+            </div>
+            <span className="text-lg font-semibold text-slate-700">Generating compelling description...</span>
           </div>
         </div>
       )}
 
       {!description && !isLoading && (
-        <div className="text-center py-8 text-gray-500">
-          <svg className="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-          </svg>
-          <p>No description generated yet.</p>
+        <div className="text-center py-12">
+          <div className="w-16 h-16 gradient-orange rounded-full flex items-center justify-center mx-auto mb-6">
+            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+          </div>
+          <h3 className="text-xl font-semibold text-slate-800 mb-2">No description generated yet</h3>
           {selectedTitle && (
-            <p className="text-sm mt-1">Select a title above and click "Generate Description" to create one.</p>
+            <p className="text-slate-600">Select a title above and click "Generate Description" to create one.</p>
           )}
         </div>
       )}
 
       {description && (
-        <div className="space-y-4">
+        <div className="space-y-6">
           {isEditing ? (
-            <div className="space-y-3">
+            <div className="space-y-4">
               <textarea
                 value={localDescription}
                 onChange={(e) => setLocalDescription(e.target.value)}
-                className="w-full h-64 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full h-80 px-4 py-3 border-2 border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-slate-700 font-medium resize-none"
                 placeholder="Enter your YouTube description..."
               />
-              <div className="flex space-x-2">
+              <div className="flex space-x-3">
                 <button
                   onClick={handleSave}
-                  className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
+                  className="px-6 py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-all font-semibold shadow-lg hover:shadow-xl"
                 >
                   Save Changes
                 </button>
                 <button
                   onClick={handleCancel}
-                  className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 transition-colors"
+                  className="btn-secondary"
                 >
                   Cancel
                 </button>
               </div>
             </div>
           ) : (
-            <div className="space-y-3">
-              <div className="bg-gray-50 p-4 rounded-lg max-h-64 overflow-y-auto">
-                <div className="prose prose-sm max-w-none">
+            <div className="space-y-4">
+              <div className="bg-slate-50 p-6 rounded-2xl max-h-80 overflow-y-auto border border-slate-200">
+                <div className="prose prose-slate max-w-none">
                   {formatDescription(localDescription)}
                 </div>
               </div>
               <button
                 onClick={() => setIsEditing(true)}
-                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+                className="btn-primary"
               >
                 Edit Description
               </button>
             </div>
           )}
 
-          <div className="flex items-center justify-between text-sm text-gray-500 pt-2 border-t">
-            <span>
+          <div className="flex items-center justify-between text-sm text-slate-600 pt-4 border-t border-slate-200">
+            <span className="font-medium">
               {localDescription.split(/\s+/).length} words, {localDescription.length} characters
             </span>
             <span>
               {localDescription.length > 5000 ? (
-                <span className="text-yellow-600">⚠️ Exceeds YouTube's 5000 character limit</span>
+                <span className="text-orange-600 font-medium">⚠️ Exceeds YouTube's 5000 character limit</span>
               ) : (
-                <span className="text-green-600">✓ Within YouTube's 5000 character limit</span>
+                <span className="text-green-600 font-medium">✓ Within YouTube's 5000 character limit</span>
               )}
             </span>
           </div>
         </div>
       )}
 
-      <div className="mt-4 p-3 bg-green-50 rounded-lg">
-        <p className="text-sm text-green-800">
-          💡 <strong>Tip:</strong> This description is optimized for YouTube SEO with relevant keywords, 
+      <div className="mt-6 p-4 bg-gradient-to-r from-green-50 to-green-100 rounded-2xl border border-green-200">
+        <p className="text-sm text-green-800 font-medium">
+          💡 <strong>Pro Tip:</strong> This description is optimized for YouTube SEO with relevant keywords, 
           timestamps, and call-to-action elements.
         </p>
       </div>

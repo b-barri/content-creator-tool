@@ -100,21 +100,21 @@ export default function VideoUpload({ onUploadComplete, onUploadError }: VideoUp
       <div
         {...getRootProps()}
         className={`
-          border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors
+          border-2 border-dashed rounded-2xl p-16 text-center cursor-pointer transition-all duration-200
           ${isDragActive && !isDragReject 
-            ? 'border-blue-500 bg-blue-50' 
+            ? 'border-[#C7AFFF] bg-purple-50 scale-[1.02]' 
             : isDragReject 
-            ? 'border-red-500 bg-red-50' 
-            : 'border-gray-300 hover:border-gray-400'
+            ? 'border-red-400 bg-red-50' 
+            : 'border-[#D1D5DB] hover:border-[#C7AFFF] hover:bg-purple-50/50'
           }
         `}
       >
         <input {...getInputProps()} />
         
-        <div className="space-y-4">
-          <div className="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
+        <div className="space-y-8">
+          <div className="mx-auto w-24 h-24 bg-[#C7AFFF] rounded-2xl flex items-center justify-center shadow-sm">
             <svg
-              className="w-8 h-8 text-gray-400"
+              className="w-12 h-12 text-white"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -122,14 +122,14 @@ export default function VideoUpload({ onUploadComplete, onUploadError }: VideoUp
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                strokeWidth={2}
+                strokeWidth={1.5}
                 d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
               />
             </svg>
           </div>
           
           <div>
-            <p className="text-lg font-medium text-gray-900">
+            <p className="text-2xl font-light text-[#000000] mb-3">
               {isDragActive
                 ? isDragReject
                   ? 'File type not supported'
@@ -137,10 +137,10 @@ export default function VideoUpload({ onUploadComplete, onUploadError }: VideoUp
                 : 'Drag & drop your video here'
               }
             </p>
-            <p className="text-sm text-gray-500 mt-1">
+            <p className="text-[#777777] font-light text-lg mb-4">
               or click to browse files
             </p>
-            <p className="text-xs text-gray-400 mt-2">
+            <p className="text-sm text-[#888888] font-light">
               Supports MP4, MOV, AVI, MKV, WebM, M4V (max 25MB for transcription)
             </p>
           </div>
@@ -148,21 +148,21 @@ export default function VideoUpload({ onUploadComplete, onUploadError }: VideoUp
       </div>
 
       {uploadedFile && (
-        <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                <svg className="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+        <div className="mt-8 p-8 bg-white rounded-2xl border border-[#D1D5DB] shadow-sm">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center space-x-4">
+              <div className="w-14 h-14 bg-[#C7AFFF] rounded-2xl flex items-center justify-center">
+                <svg className="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z" />
                 </svg>
               </div>
               <div>
-                <p className="text-sm font-medium text-gray-900">{uploadedFile.name}</p>
-                <p className="text-xs text-gray-500">{formatFileSize(uploadedFile.size)}</p>
+                <p className="font-medium text-[#000000]">{uploadedFile.name}</p>
+                <p className="text-sm text-[#777777] font-light">{formatFileSize(uploadedFile.size)}</p>
               </div>
             </div>
             {uploading && (
-              <div className="text-sm text-blue-600 font-medium">
+              <div className="text-sm font-medium text-[#C7AFFF]">
                 {Math.round(uploadProgress)}%
               </div>
             )}

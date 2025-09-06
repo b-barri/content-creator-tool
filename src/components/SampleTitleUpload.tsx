@@ -27,7 +27,7 @@ export default function SampleTitleUpload({
   const [newDescription, setNewDescription] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [message, setMessage] = useState('')
-  const [showUpload, setShowUpload] = useState(false)
+  const [showUpload, setShowUpload] = useState(true)
   const [activeTab, setActiveTab] = useState<'titles' | 'descriptions'>('titles')
 
   useEffect(() => {
@@ -173,97 +173,90 @@ export default function SampleTitleUpload({
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
-      <div className="flex items-center justify-between mb-4">
-        <div>
-          <h3 className="text-lg font-semibold text-gray-900">Sample Content for Analysis</h3>
-          {isTranscriptionInProgress && (
-            <p className="text-sm text-blue-600 mt-1">⏳ Transcription in progress...</p>
-          )}
-          {isTranscriptionComplete && (
-            <p className="text-sm text-green-600 mt-1">✅ Transcription complete - ready to generate content!</p>
-          )}
-          {!isTranscriptionComplete && !isTranscriptionInProgress && (
-            <p className="text-sm text-gray-500 mt-1">📝 Upload a video to get started</p>
-          )}
+    <div className="space-y-6">
+      {isTranscriptionInProgress && (
+        <div className="mb-4">
+          <p className="text-orange-600 font-medium">⏳ Transcription in progress...</p>
         </div>
-        <button
-          onClick={() => setShowUpload(!showUpload)}
-          className="px-4 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
-        >
-          {showUpload ? 'Hide' : 'Manage Samples'}
-        </button>
-      </div>
+      )}
+      {isTranscriptionComplete && (
+        <div className="mb-4">
+          <p className="text-green-600 font-medium">✅ Transcription complete - ready to generate content!</p>
+        </div>
+      )}
 
       {(titles.length > 0 || descriptions.length > 0) && (
-        <div className="mb-4">
-          <div className="flex space-x-4 mb-2">
-            {titles.length > 0 && (
-              <p className="text-sm text-gray-600">
-                📝 {titles.length} sample title{titles.length !== 1 ? 's' : ''}
-              </p>
-            )}
-            {descriptions.length > 0 && (
-              <p className="text-sm text-gray-600">
-                📄 {descriptions.length} sample description{descriptions.length !== 1 ? 's' : ''}
-              </p>
-            )}
-          </div>
+        <div className="grid md:grid-cols-2 gap-6">
           {titles.length > 0 && (
-            <div className="max-h-32 overflow-y-auto bg-gray-50 p-3 rounded-lg mb-2">
-              <p className="text-xs text-gray-500 mb-2 font-medium">Sample Titles:</p>
-              {titles.map((title, index) => (
-                <div key={index} className="flex items-center justify-between py-1">
-                  <span className="text-sm text-gray-700 flex-1">{title}</span>
-                  <button
-                    onClick={() => removeTitle(index)}
-                    className="ml-2 text-red-600 hover:text-red-800 text-sm"
-                  >
-                    ×
-                  </button>
+            <div className="bg-slate-50 rounded-2xl p-6">
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="w-10 h-10 gradient-orange rounded-full flex items-center justify-center">
+                  <span className="text-white text-lg font-bold">📝</span>
                 </div>
-              ))}
+                <h4 className="font-bold text-slate-800 text-lg">{titles.length} Sample Title{titles.length !== 1 ? 's' : ''}</h4>
+              </div>
+              <div className="max-h-40 overflow-y-auto space-y-3">
+                {titles.map((title, index) => (
+                  <div key={index} className="flex items-center justify-between bg-white p-3 rounded-xl border border-slate-200">
+                    <span className="text-sm text-slate-700 flex-1 font-medium">{title}</span>
+                    <button
+                      onClick={() => removeTitle(index)}
+                      className="ml-3 text-red-500 hover:text-red-700 text-lg font-bold w-6 h-6 flex items-center justify-center rounded-full hover:bg-red-50"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
+          
           {descriptions.length > 0 && (
-            <div className="max-h-32 overflow-y-auto bg-gray-50 p-3 rounded-lg">
-              <p className="text-xs text-gray-500 mb-2 font-medium">Sample Descriptions:</p>
-              {descriptions.map((description, index) => (
-                <div key={index} className="flex items-start justify-between py-1">
-                  <span className="text-sm text-gray-700 flex-1">{description}</span>
-                  <button
-                    onClick={() => removeDescription(index)}
-                    className="ml-2 text-red-600 hover:text-red-800 text-sm"
-                  >
-                    ×
-                  </button>
+            <div className="bg-slate-50 rounded-2xl p-6">
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="w-10 h-10 gradient-orange rounded-full flex items-center justify-center">
+                  <span className="text-white text-lg font-bold">📄</span>
                 </div>
-              ))}
+                <h4 className="font-bold text-slate-800 text-lg">{descriptions.length} Sample Description{descriptions.length !== 1 ? 's' : ''}</h4>
+              </div>
+              <div className="max-h-40 overflow-y-auto space-y-3">
+                {descriptions.map((description, index) => (
+                  <div key={index} className="flex items-start justify-between bg-white p-3 rounded-xl border border-slate-200">
+                    <span className="text-sm text-slate-700 flex-1 font-medium">{description}</span>
+                    <button
+                      onClick={() => removeDescription(index)}
+                      className="ml-3 text-red-500 hover:text-red-700 text-lg font-bold w-6 h-6 flex items-center justify-center rounded-full hover:bg-red-50"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
         </div>
       )}
 
       {showUpload && (
-        <div className="space-y-4">
+        <div className="space-y-6">
           {/* Tab Navigation */}
-          <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg">
+          <div className="flex space-x-2 bg-slate-100 p-2 rounded-2xl">
             <button
               onClick={() => setActiveTab('titles')}
-              className={`flex-1 py-2 px-4 text-sm font-medium rounded-md transition-colors ${
+              className={`flex-1 py-3 px-6 text-sm font-semibold rounded-xl transition-all ${
                 activeTab === 'titles'
-                  ? 'bg-white text-blue-600 shadow-sm'
-                  : 'text-gray-600 hover:text-gray-900'
+                  ? 'bg-white text-orange-600 shadow-lg'
+                  : 'text-slate-600 hover:text-slate-800 hover:bg-slate-50'
               }`}
             >
               📝 Titles
             </button>
             <button
               onClick={() => setActiveTab('descriptions')}
-              className={`flex-1 py-2 px-4 text-sm font-medium rounded-md transition-colors ${
+              className={`flex-1 py-3 px-6 text-sm font-semibold rounded-xl transition-all ${
                 activeTab === 'descriptions'
-                  ? 'bg-white text-blue-600 shadow-sm'
-                  : 'text-gray-600 hover:text-gray-900'
+                  ? 'bg-white text-orange-600 shadow-lg'
+                  : 'text-slate-600 hover:text-slate-800 hover:bg-slate-50'
               }`}
             >
               📄 Descriptions
@@ -272,23 +265,23 @@ export default function SampleTitleUpload({
 
           {/* Title Tab */}
           {activeTab === 'titles' && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+            <div className="space-y-4">
+              <label className="block text-lg font-semibold text-slate-800">
                 Add Sample Title
               </label>
-              <div className="flex space-x-2">
+              <div className="flex space-x-3">
                 <input
                   type="text"
                   value={newTitle}
                   onChange={(e) => setNewTitle(e.target.value)}
                   placeholder="Enter a successful YouTube title..."
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="flex-1 px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-slate-700 font-medium"
                   onKeyPress={(e) => e.key === 'Enter' && addTitle()}
                 />
                 <button
                   onClick={addTitle}
                   disabled={!newTitle.trim()}
-                  className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:bg-gray-400 transition-colors"
+                  className="px-6 py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 disabled:bg-slate-400 transition-all font-semibold shadow-lg hover:shadow-xl"
                 >
                   Add
                 </button>
@@ -298,22 +291,22 @@ export default function SampleTitleUpload({
 
           {/* Description Tab */}
           {activeTab === 'descriptions' && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+            <div className="space-y-4">
+              <label className="block text-lg font-semibold text-slate-800">
                 Add Sample Description
               </label>
-              <div className="space-y-2">
+              <div className="space-y-4">
                 <textarea
                   value={newDescription}
                   onChange={(e) => setNewDescription(e.target.value)}
                   placeholder="Enter a successful YouTube description..."
                   rows={4}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-slate-700 font-medium resize-none"
                 />
                 <button
                   onClick={addDescription}
                   disabled={!newDescription.trim()}
-                  className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:bg-gray-400 transition-colors"
+                  className="px-6 py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 disabled:bg-slate-400 transition-all font-semibold shadow-lg hover:shadow-xl"
                 >
                   Add Description
                 </button>
@@ -321,20 +314,20 @@ export default function SampleTitleUpload({
             </div>
           )}
 
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-3">
             {activeTab === 'titles' && (
               <>
                 <button
                   onClick={saveSampleTitles}
                   disabled={isLoading || titles.length === 0 || !isTranscriptionComplete}
-                  className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:bg-gray-400 transition-colors"
+                  className="btn-primary disabled:bg-slate-400 disabled:cursor-not-allowed"
                 >
                   {isLoading ? 'Saving...' : isTranscriptionComplete ? 'Save & Generate Titles' : 'Waiting for Transcription...'}
                 </button>
                 <button
                   onClick={loadExistingSamples}
                   disabled={isLoading}
-                  className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 disabled:bg-gray-400 transition-colors"
+                  className="btn-secondary disabled:bg-slate-400 disabled:cursor-not-allowed"
                 >
                   {isLoading ? 'Loading...' : 'Load Existing'}
                 </button>
@@ -348,7 +341,7 @@ export default function SampleTitleUpload({
                     onGenerateTitles()
                   }}
                   disabled={isLoading || !isTranscriptionComplete}
-                  className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:bg-gray-400 transition-colors"
+                  className="px-6 py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 disabled:bg-slate-400 transition-all font-semibold shadow-lg hover:shadow-xl disabled:cursor-not-allowed"
                 >
                   {isTranscriptionComplete ? 'Skip & Generate Titles' : 'Waiting for Transcription...'}
                 </button>
@@ -358,7 +351,7 @@ export default function SampleTitleUpload({
               <button
                 onClick={saveSampleDescriptions}
                 disabled={isLoading || descriptions.length === 0}
-                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:bg-gray-400 transition-colors"
+                className="btn-primary disabled:bg-slate-400 disabled:cursor-not-allowed"
               >
                 {isLoading ? 'Saving...' : 'Save Descriptions'}
               </button>
@@ -366,10 +359,10 @@ export default function SampleTitleUpload({
           </div>
 
           {message && (
-            <div className={`p-3 rounded-lg text-sm ${
+            <div className={`p-4 rounded-2xl text-sm font-medium ${
               message.includes('Error') || message.includes('Failed') 
-                ? 'bg-red-100 text-red-700' 
-                : 'bg-green-100 text-green-700'
+                ? 'bg-red-50 text-red-700 border border-red-200' 
+                : 'bg-green-50 text-green-700 border border-green-200'
             }`}>
               {message}
             </div>
@@ -377,8 +370,10 @@ export default function SampleTitleUpload({
         </div>
       )}
 
-      <div className="mt-4 text-xs text-gray-500">
-        <p>💡 <strong>Tip:</strong> Upload your most successful YouTube titles and descriptions to help the AI generate similar high-performing content that matches your style and tone.</p>
+      <div className="mt-6 p-4 bg-gradient-to-r from-orange-50 to-orange-100 rounded-2xl border border-orange-200">
+        <p className="text-sm text-orange-800 font-medium">
+          💡 <strong>Pro Tip:</strong> Upload your most successful YouTube titles and descriptions to help the AI generate similar high-performing content that matches your style and tone.
+        </p>
       </div>
     </div>
   )

@@ -1,24 +1,109 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #FFFFEE;
+  --foreground: #000000;
+  --primary-orange: #FF6B35;
+  --primary-orange-light: #F7931E;
+  --header-green: #1F4D42;
+  --purple-accent: #C7AFFF;
+  --light-gray: #FFFFEE;
+  --text-dark: #000000;
+  --text-medium: #777777;
+  --text-light: #888888;
+  --border-light: #D1D5DB;
+  --card-background: #FFFFFF;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-primary-orange: var(--primary-orange);
+  --color-primary-orange-light: var(--primary-orange-light);
+  --color-header-green: var(--header-green);
+  --color-purple-accent: var(--purple-accent);
+  --color-light-gray: var(--light-gray);
+  --color-text-dark: var(--text-dark);
+  --color-text-medium: var(--text-medium);
+  --color-text-light: var(--text-light);
+  --color-border-light: var(--border-light);
+  --color-card-background: var(--card-background);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-weight: 300;
+  line-height: 1.7;
+}
+
+/* Custom gradient backgrounds */
+.gradient-orange {
+  background: linear-gradient(135deg, var(--primary-orange) 0%, var(--primary-orange-light) 100%);
+}
+
+.gradient-green {
+  background: linear-gradient(135deg, var(--header-green) 0%, #2a5f52 100%);
+}
+
+/* Curved text animation */
+.curved-text {
+  position: relative;
+  display: inline-block;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+/* Modern card styles */
+.modern-card {
+  background: var(--card-background);
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  border: 1px solid var(--border-light);
+}
+
+/* Button styles */
+.btn-primary {
+  background: var(--purple-accent);
+  color: var(--text-dark);
+  border: none;
+  border-radius: 12px;
+  padding: 12px 24px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(199, 175, 255, 0.3);
+}
+
+.btn-primary:hover {
+  background: #B899FF;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(199, 175, 255, 0.4);
+}
+
+.btn-secondary {
+  background: var(--card-background);
+  color: var(--text-dark);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  padding: 12px 24px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.btn-secondary:hover {
+  border-color: var(--purple-accent);
+  color: var(--purple-accent);
+  transform: translateY(-1px);
+}
+
+/* Serif heading font class */
+.serif-heading {
+  font-family: 'Times New Roman', Times, serif;
+  font-weight: 300;
+  letter-spacing: -0.02em;
 }
