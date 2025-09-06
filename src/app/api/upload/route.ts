@@ -3,10 +3,16 @@ import { supabaseAdmin } from '@/lib/supabase'
 
 export async function POST(request: NextRequest) {
   try {
+    console.log('=== UPLOAD API CALLED ===')
+    console.log('Environment check:')
+    console.log('NEXT_PUBLIC_SUPABASE_URL:', !!process.env.NEXT_PUBLIC_SUPABASE_URL)
+    console.log('SUPABASE_SERVICE_ROLE_KEY:', !!process.env.SUPABASE_SERVICE_ROLE_KEY)
+    
     const formData = await request.formData()
     const file = formData.get('file') as File
     
     if (!file) {
+      console.log('No file provided in form data')
       return NextResponse.json({ error: 'No file provided' }, { status: 400 })
     }
     
@@ -28,15 +34,40 @@ export async function POST(request: NextRequest) {
     console.log('Uploading file:', fileName, 'Size:', file.size, 'Type:', file.type)
     console.log('Using Supabase admin client')
     
-    const { data, error } = await supabaseAdmin().storage
-      .from('videos')
-      .upload(fileName, file)
-    
-    if (error) {
-      console.error('Upload error:', error)
+    let data, error
+    try {
+      console.log('Initializing Supabase admin client...')
+      const client = supabaseAdmin()
+      console.log('Supabase client initialized successfully')
+      
+      console.log('Attempting upload to "videos" bucket...')
+      const result = await client.storage
+        .from('videos')
+        .upload(fileName, file)
+        
+      data = result.data
+      error = result.error
+      console.log('Upload result:', { data, error })
+      
+      if (error) {
+        console.error('Supabase upload error details:', {
+          message: error.message,
+          name: error.name,
+          stack: error.stack
+        })
+        return NextResponse.json({ 
+          error: 'Upload failed', 
+          details: error.message
+        }, { status: 500 })
+      }
+      
+      console.log('Upload successful:', data)
+      
+    } catch (supabaseError) {
+      console.error('Supabase client or upload error:', supabaseError)
       return NextResponse.json({ 
-        error: 'Upload failed', 
-        details: error.message
+        error: 'Supabase upload failed', 
+        details: supabaseError instanceof Error ? supabaseError.message : 'Unknown Supabase error'
       }, { status: 500 })
     }
     

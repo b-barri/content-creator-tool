@@ -51,13 +51,16 @@ export default function VideoUpload({ onUploadComplete, onUploadError }: VideoUp
       setUploadProgress(100)
 
       const data = await response.json()
+      
+      console.log('Upload response:', { status: response.status, data })
 
-      if (data.success) {
+      if (response.ok && data.success) {
         onUploadComplete(data)
       } else {
+        console.error('Upload failed with response:', data)
         const errorMessage = data.details 
           ? `${data.error}: ${data.details}` 
-          : data.error || 'Upload failed'
+          : data.error || `Upload failed (${response.status})`
         onUploadError(errorMessage)
       }
     } catch (error) {
