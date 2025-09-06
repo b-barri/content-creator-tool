@@ -18,6 +18,9 @@ export default function VideoUpload({ onUploadComplete, onUploadError }: VideoUp
   const [uploading, setUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState(0)
   const [uploadedFile, setUploadedFile] = useState<File | null>(null)
+  
+  // Debug version
+  console.log('VideoUpload component loaded - v2.0 with chunked upload support')
 
   const uploadFileInChunks = async (file: File) => {
     const CHUNK_SIZE = 4 * 1024 * 1024 // 4MB chunks (under Vercel's 4.5MB limit)
@@ -84,10 +87,10 @@ export default function VideoUpload({ onUploadComplete, onUploadError }: VideoUp
       
       // Use chunked upload for files larger than 4MB
       if (file.size > 4 * 1024 * 1024) {
-        console.log('Using chunked upload for large file')
+        console.log('Using chunked upload for large file:', file.name, 'Size:', file.size, 'bytes')
         data = await uploadFileInChunks(file)
       } else {
-        console.log('Using regular upload for small file')
+        console.log('Using regular upload for small file:', file.name, 'Size:', file.size, 'bytes')
         const formData = new FormData()
         formData.append('file', file)
 
