@@ -36,7 +36,8 @@ logs
 
 # Google Cloud credentials (IMPORTANT: Keep these secret!)
 google-cloud-key.json
-*.json
+# Don't exclude all JSON files - only specific ones
+# *.json
 
 # Temporary files
 *.tmp
