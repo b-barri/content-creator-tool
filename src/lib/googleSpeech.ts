@@ -1,9 +1,34 @@
 import { SpeechClient } from '@google-cloud/speech'
 
-const speechClient = new SpeechClient({
-  keyFilename: process.env.GOOGLE_APPLICATION_CREDENTIALS,
-  projectId: process.env.GOOGLE_CLOUD_PROJECT_ID,
-})
+// Initialize speech client with proper error handling for deployment
+let speechClient: SpeechClient | null = null
+
+function getSpeechClient() {
+  if (!speechClient) {
+    try {
+      // For Vercel deployment, use credentials from environment variables
+      if (process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON) {
+        const credentials = JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON)
+        speechClient = new SpeechClient({
+          credentials,
+          projectId: process.env.GOOGLE_CLOUD_PROJECT_ID,
+        })
+      } else if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+        // For local development with file path
+        speechClient = new SpeechClient({
+          keyFilename: process.env.GOOGLE_APPLICATION_CREDENTIALS,
+          projectId: process.env.GOOGLE_CLOUD_PROJECT_ID,
+        })
+      } else {
+        throw new Error('Google Cloud credentials not configured')
+      }
+    } catch (error) {
+      console.error('Failed to initialize Google Speech client:', error)
+      throw new Error('Google Cloud Speech service is not available')
+    }
+  }
+  return speechClient
+}
 
 export async function transcribeVideoWithGoogle(videoUrl: string): Promise<string> {
   try {
@@ -45,7 +70,7 @@ export async function transcribeVideoWithGoogle(videoUrl: string): Promise<strin
       },
     }
     
-    const [response] = await speechClient.recognize(request)
+    const [response] = await getSpeechClient().recognize(request)
     
     if (!response.results || response.results.length === 0) {
       throw new Error('No transcription results returned')
@@ -95,7 +120,7 @@ export async function transcribeVideoStreaming(videoUrl: string): Promise<string
       throw new Error('No response body available')
     }
     
-    const recognizeStream = speechClient
+    const recognizeStream = getSpeechClient()
       .streamingRecognize({
         config: {
           encoding: 'WEBM_OPUS' as const,
